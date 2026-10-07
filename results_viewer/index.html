@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interactive comparison</title>
+<link rel="stylesheet" href="assets/viewer.css">
+<script>if (window.self !== window.top) document.documentElement.classList.add("embedded");</script>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+<header class="top">
+  <div class="heading">
+    <h1 id="page-title">Interactive comparison</h1>
+    <span class="subtitle">Pick a case below. Every 3D panel can be rotated, zoomed and panned.</span>
+  </div>
+  <nav class="strip" id="strip" aria-label="Cases"></nav>
+</header>
+<main id="main">
+  <section class="block">
+    <h2 class="block-label">Input</h2>
+    <div class="grid">
+      <figure class="panel">
+        <figcaption>Source image</figcaption>
+        <div class="view"><img id="img-source" alt="Source image"></div>
+      </figure>
+      <figure class="panel">
+        <figcaption>Edit request</figcaption>
+        <div class="view"><img id="img-request" alt="Edit request image"></div>
+      </figure>
+      <figure class="panel" id="viewer-source">
+        <figcaption>Source object (3D)</figcaption>
+        <div class="view"><div class="status"></div></div>
+      </figure>
+      <div class="card controls">
+        <div class="case-head">
+          <div>
+            <div class="case-kind" id="case-kind"></div>
+            <div class="case-name" id="case-name"></div>
+          </div>
+          <div class="nav-buttons">
+            <button type="button" id="prev" aria-label="Previous case">&#8592;</button>
+            <span id="case-count"></span>
+            <button type="button" id="next" aria-label="Next case">&#8594;</button>
+          </div>
+        </div>
+        <div class="control-row">
+          <label class="check"><input type="checkbox" id="sync" checked> Sync cameras</label>
+          <div class="segmented" role="group" aria-label="Shading">
+            <button type="button" id="shade-textured" class="on">Textured</button>
+            <button type="button" id="shade-grey">Gray geometry</button>
+          </div>
+          <button type="button" id="reset" class="plain">Reset view</button>
+        </div>
+        <p class="hint">Drag to rotate, scroll to zoom, right-drag or shift-drag to pan. Keys: &#8592; &#8594; case, R reset, G gray, S sync.</p>
+        <p class="load-state" id="load-state"></p>
+      </div>
+    </div>
+  </section>
+  <section class="block">
+    <h2 class="block-label">Results</h2>
+    <div class="grid" id="results"></div>
+  </section>
+</main>
+<footer id="footer"></footer>
+<script src="assets/cases.js"></script>
+<script src="assets/viewer.js"></script>
+</body>
+</html>

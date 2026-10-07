@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spatially Adaptive Personalization for Consistent 3D Generative Editing</title>
+<meta name="description" content="Edit a 3D asset from one edited image of it: personalize a 3D generator to the asset with a LoRA, then set the adapter's strength per latent token.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/css/style.css">
+<script src="config.js"></script>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap-wide">
+    <h1 class="title"><span class="title-method" data-method></span><span class="title-colon">: </span><span class="title-rest" data-cfg="titleRest"></span></h1>
+    <p class="authors" data-cfg="authors"></p>
+    <p class="affiliation" data-cfg="affiliation"></p>
+    <nav class="links" aria-label="Project links">
+      <a class="btn" data-link="paper">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l5 5v15H6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 2v5h5M9 12h7M9 16h7" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        <span>Paper</span><span class="sub">arXiv</span>
+      </a>
+      <a class="btn" data-link="code">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 7 3.5 12l5 5M15.5 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Code</span><span class="sub">GitHub</span>
+      </a>
+      <a class="btn" data-link="demo">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/></svg>
+        <span>Demo</span><span class="sub">Hugging Face Space</span>
+      </a>
+      <a class="btn" data-link="adapters">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 20 7.2v9.6l-8 4.4-8-4.4V7.2z M4 7.2l8 4.4 8-4.4 M12 11.6v9.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <span>Adapters</span><span class="sub">Hugging Face</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<noscript><p class="noscript">This page fills in the method name, authors and links with JavaScript; please enable it.</p></noscript>
+
+<main>
+
+<section class="teaser wrap-wide" aria-label="Example edits">
+  <div class="teaser-head" aria-hidden="true">
+    <span>Source</span><span>Edit request</span><span></span><span class="ours">Result</span>
+  </div>
+
+  <figure class="teaser-row">
+    <figcaption class="row-title"><span><span class="kind">Local edit</span>Airplane: pilot &rarr; fox</span><a class="to-viewer" data-case="gso_turboprop_airplane_with_pilo_p2">View in 3D</a></figcaption>
+    <div class="row-cells">
+      <figure><video class="turntable" autoplay muted loop playsinline preload="auto" poster="assets/img/teaser_airplane_source.webp" width="640" height="640" aria-label="Source toy airplane with a pilot, turning; the pilot is outlined as the edit region"><source src="assets/video/teaser_airplane_source.mp4" type="video/mp4"><img src="assets/img/teaser_airplane_source.webp" alt="Source toy airplane with a pilot; the pilot is outlined as the edit region" width="640" height="640"></video><figcaption>Source</figcaption></figure>
+      <figure><img src="assets/img/teaser_airplane_request.webp" alt="Edit request: the same view with the pilot replaced by a fox" width="640" height="640"><figcaption>Edit request</figcaption></figure>
+      <span class="row-arrow" aria-hidden="true">&rarr;</span>
+      <figure class="ours"><video class="turntable" autoplay muted loop playsinline preload="auto" poster="assets/img/teaser_airplane_ours.webp" width="640" height="640" aria-label="Edited 3D result, turning in step with the source"><source src="assets/video/teaser_airplane_ours.mp4" type="video/mp4"><img src="assets/img/teaser_airplane_ours.webp" alt="Edited 3D result from the camera of the edit request" width="640" height="640"></video><figcaption>Result</figcaption></figure>
+    </div>
+  </figure>
+
+  <figure class="teaser-row">
+    <figcaption class="row-title"><span><span class="kind">Local edit</span>Watch strap: face &rarr; book</span><a class="to-viewer" data-case="pot_ca86a579_p3">View in 3D</a></figcaption>
+    <div class="row-cells">
+      <figure><video class="turntable" autoplay muted loop playsinline preload="auto" poster="assets/img/teaser_strap_source.webp" width="640" height="640" aria-label="Source watch, turning; its face is outlined as the edit region"><source src="assets/video/teaser_strap_source.mp4" type="video/mp4"><img src="assets/img/teaser_strap_source.webp" alt="Source watch with its face outlined as the edit region" width="640" height="640"></video><figcaption>Source</figcaption></figure>
+      <figure><img src="assets/img/teaser_strap_request.webp" alt="Edit request: the watch face replaced by an open book" width="640" height="640"><figcaption>Edit request</figcaption></figure>
+      <span class="row-arrow" aria-hidden="true">&rarr;</span>
+      <figure class="ours"><video class="turntable" autoplay muted loop playsinline preload="auto" poster="assets/img/teaser_strap_ours.webp" width="640" height="640" aria-label="Edited 3D result, turning in step with the source"><source src="assets/video/teaser_strap_ours.mp4" type="video/mp4"><img src="assets/img/teaser_strap_ours.webp" alt="Edited 3D result from the camera of the edit request" width="640" height="640"></video><figcaption>Result</figcaption></figure>
+    </div>
+  </figure>
+
+  <figure class="teaser-row">
+    <figcaption class="row-title"><span><span class="kind">Global edit</span>Monitor &rarr; knitted yarn</span><a class="to-viewer" data-case="globedit_po_25a32b2b_p1">View in 3D</a></figcaption>
+    <div class="row-cells">
+      <figure><video class="turntable" autoplay muted loop playsinline preload="auto" poster="assets/img/teaser_monitor_source.webp" width="640" height="640" aria-label="Source asset, an orange computer monitor, turning"><source src="assets/video/teaser_monitor_source.mp4" type="video/mp4"><img src="assets/img/teaser_monitor_source.webp" alt="Source asset: an orange computer monitor" width="640" height="640"></video><figcaption>Source</figcaption></figure>
+      <figure><img src="assets/img/teaser_monitor_request.webp" alt="Edit request: the monitor rendered as knitted orange yarn" width="517" height="517"><figcaption>Edit request</figcaption></figure>
+      <span class="row-arrow" aria-hidden="true">&rarr;</span>
+      <figure class="ours"><video class="turntable" autoplay muted loop playsinline preload="auto" poster="assets/img/teaser_monitor_ours.webp" width="640" height="640" aria-label="Edited 3D result, turning in step with the source"><source src="assets/video/teaser_monitor_ours.mp4" type="video/mp4"><img src="assets/img/teaser_monitor_ours.webp" alt="Edited 3D result from the camera of the edit request" width="640" height="640"></video><figcaption>Result</figcaption></figure>
+    </div>
+  </figure>
+  <p class="summary"><span data-method></span> edits a 3D asset to match an edited image of it. It personalizes the generator to the asset, then switches that personalization off where the edit goes.</p>
+  <p class="caption">A magenta outline marks the region of a local edit. Each source turns together with its result, starting from the camera of the edit request.</p>
+</section>
+
+<section class="wrap" id="abstract">
+  <h2>Abstract</h2>
+  <p class="abstract">Image-to-3D foundation models produce clean, detailed 3D assets, but offer no direct way to edit an existing one, be it generated or manually crafted. A natural route is to edit a 2D render of the asset and regenerate from it. Existing editors either hold part of the source's latent representation fixed, as frozen latent tokens or cached voxel features, which produces geometric artifacts and preserves nothing under a global edit, or couple the generation to the source's trajectory, which holds the edit back. We instead give the generator a prior for the specific asset: a low-rank adapter is fitted to the source object and applied at a variable strength per latent token, so that tokens in the edit region run without the adapter and follow the edited image, while every other token runs with it and reproduces the source. To decide which tokens belong to the edit, we use two probes: a 2D probe on the transformer's image cross-attention, which selects tokens by image content, and a 3D probe on the shape decoder's cross-attention, which grounds the region in 3D and reaches geometry the edited view does not show. Since VecSet tokens are not bound to fixed locations and drift during denoising, we re-estimate the assignment at every step. Because the adapter carries the asset's identity rather than any one region of it, a uniform strength also turns it into a control for global edits. On Edit3D-Bench, our method achieves the highest edit fidelity of all compared methods at numerically competitive preservation, and participants in a user study preferred its results in 88% of the comparisons that were not ties.</p>
+</section>
+
+<section class="band" id="method">
+  <div class="wrap"><h2>How it works</h2></div>
+  <figure class="figure wrap-wide">
+    <a class="zoom" href="assets/img/method.webp"><img src="assets/img/method.webp" alt="Method overview. Left: LoRA training on renders of the source asset under random cameras and lights, paired with points sampled on its surface. Right: at each denoising step a 2D probe on the transformer's image cross-attention and a 3D probe on the decoder's cross-attention each select tokens; their union decides which tokens run without the adapter at the next step." width="2395" height="1091" loading="lazy"></a>
+    <figcaption><strong>Left:</strong> a LoRA (a low-rank adapter) is fitted to the source asset. <strong>Right:</strong> during editing, a 2D probe and a 3D probe find the tokens that belong to the edit; those tokens run without the adapter at the next step.</figcaption>
+  </figure>
+
+  <ol class="steps wrap-wide">
+    <li>
+      <h3>Personalize the generator to the asset</h3>
+      <p>We fit a LoRA to the source asset on the Hunyuan3D&nbsp;2.1 shape generator, much as image generators are personalized to a subject. It trains on renders of the asset from random cameras under random lighting. The personalized generator reproduces the whole asset from noise, including the parts that an edited image does not show.</p>
+    </li>
+    <li>
+      <h3>Set the adapter's strength per token</h3>
+      <p>The generator represents a shape as 4,096 latent tokens. The adapter sits in the transformer's feed-forward layers, which process each token separately, so each token can have its own adapter strength. Tokens in the edit run at strength zero and follow the edited image; all other tokens keep the adapter and reproduce the source. Attention still connects all tokens, so the edit and the rest of the asset are generated together, as one shape.</p>
+    </li>
+    <li>
+      <h3>Find the edit's tokens again at every step</h3>
+      <p>A token has no fixed place on the shape and can move during sampling, so a selection made once goes stale. Between step 8 and step 16 of 30, we select the tokens again at every step. A <strong>2D probe</strong> picks the tokens that attend most to the edited part of the image. A <strong>3D probe</strong> samples points inside the 3D edit region, including empty space and parts the image does not show, and picks the tokens those points attend to most in the shape decoder. Their union runs without the adapter at the next step. Before step 8, all tokens share one adapter strength; from step 16 on, the base model finishes the shape alone.</p>
+    </li>
+  </ol>
+</section>
+
+<section class="viewer-section" id="comparison">
+  <div class="wrap">
+    <h2>Interactive comparison</h2>
+    <p>All 33 cases from the paper's comparison figures, with <span data-method></span> and five baselines side by side: VoxHammer and Easy3E, which edit the sparse voxel latents of TRELLIS, and VecSet-Edit, TanGO and AnchorFlow, which edit VecSet latents as we do. Every baseline ran from its released code at its default settings, changed only to accept the benchmark's inputs. Drag any 3D panel to rotate it; with <em>Sync cameras</em> on, all panels follow.</p>
+  </div>
+  <div class="viewer-shell wrap-viewer">
+    <div class="viewer-slot" id="viewer-slot"><p class="viewer-wait">Loading the interactive viewer&hellip;</p></div>
+    <figure class="viewer-poster">
+      <a class="zoom" href="assets/img/comparison_local.webp"><img src="assets/img/comparison_local.webp" alt="Static comparison of local edits: source, edit request, VoxHammer, VecSet-Edit, Easy3E, AnchorFlow, TanGO and ours, each from the edit request's camera and from the opposite side" width="2400" height="1465" loading="lazy"></a>
+      <figcaption>Local edits from the paper, each from the camera of the edit request (upper row) and from the opposite side (lower row). Tap the figure to enlarge it. The interactive viewer needs a desktop-sized screen.</figcaption>
+      <a class="btn btn-light" data-viewer-link target="_blank" rel="noopener">Open the interactive viewer</a>
+    </figure>
+  </div>
+  <div class="wrap">
+    <p class="note"><span data-method></span> generates geometry; its textures come from a pipeline we built on Hunyuan3D-Paint. TanGO and AnchorFlow output untextured meshes, so we texture them with the same pipeline. We could not obtain VoxHammer results on the global edits.</p>
+  </div>
+</section>
+
+<section class="wrap" id="results">
+  <h2>Results on Edit3D-Bench</h2>
+  <p>Edit3D-Bench has 300 edits: 100 textured assets from Google Scanned Objects and PartObjaverse-Tiny, with three edits each. It has no ground-truth edited asset, and all its metrics except CLIP-T compare the result with the unedited source, so returning the source unchanged beats every published method on CD, PSNR, SSIM, LPIPS and DINO-I. We therefore add two metrics of our own: edit fidelity, measured against the edit request, and an exact surface distance for preservation.</p>
+
+  <div class="table-scroll">
+  <table class="results">
+    <thead>
+      <tr class="group">
+        <th></th>
+        <th colspan="6">Benchmark metrics</th>
+        <th colspan="2" class="ours-metrics">Edit fidelity</th>
+        <th class="ours-metrics">Preservation</th>
+      </tr>
+      <tr>
+        <th scope="col">Method</th>
+        <th scope="col">CD&nbsp;&darr;</th>
+        <th scope="col">PSNR&nbsp;&uarr;</th>
+        <th scope="col">SSIM&nbsp;&uarr;</th>
+        <th scope="col">LPIPS&nbsp;&darr;</th>
+        <th scope="col">DINO-I&nbsp;&uarr;</th>
+        <th scope="col">CLIP-T&nbsp;&uarr;</th>
+        <th scope="col" class="ours-metrics">DINOv2&nbsp;&darr;</th>
+        <th scope="col" class="ours-metrics">CLIP&nbsp;&darr;</th>
+        <th scope="col" class="ours-metrics">Pres.&nbsp;&darr;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">VoxHammer<sup>&dagger;</sup></th><td>0.0182</td><td>27.13</td><td>0.949</td><td>0.050</td><td>0.905</td><td>0.281</td><td class="second">0.282</td><td class="second">0.113</td><td>0.0127</td></tr>
+      <tr><th scope="row">Easy3E</th><td class="best">0.0060</td><td class="best">33.54</td><td class="best">0.981</td><td class="best">0.017</td><td class="best">0.927</td><td>0.281</td><td>0.351</td><td>0.120</td><td class="best">0.0012</td></tr>
+      <tr><th scope="row">VecSet-Edit</th><td class="second">0.0175</td><td>26.82</td><td>0.951</td><td>0.049</td><td>0.886</td><td>0.280</td><td>0.388</td><td>0.128</td><td class="second">0.0101</td></tr>
+      <tr><th scope="row">TanGO</th><td>0.0519</td><td>22.60</td><td>0.911</td><td>0.118</td><td>0.836</td><td class="second">0.283</td><td>0.328</td><td>0.120</td><td>0.0429</td></tr>
+      <tr><th scope="row">AnchorFlow</th><td>0.0378</td><td>25.01</td><td>0.931</td><td>0.085</td><td>0.841</td><td>0.280</td><td>0.347</td><td>0.125</td><td>0.0295</td></tr>
+      <tr class="ours-row"><th scope="row">Ours</th><td>0.0183</td><td class="second">30.94</td><td class="second">0.967</td><td class="second">0.042</td><td class="second">0.910</td><td class="best">0.287</td><td class="best">0.251</td><td class="best">0.093</td><td>0.0119</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="table-note"><strong>Bold</strong>: best; <span class="second">underlined</span>: second best. All 300 cases, except <sup>&dagger;</sup>VoxHammer, whose released code produced no output on 40 of them; on the other 260, <span data-method></span> reaches a CD of 0.0159 and a preservation error of 0.0102.</p>
+
+  <p><span data-method></span> has the best edit fidelity under both DINOv2 (0.251) and CLIP (0.093), and the best CLIP-T (0.287). Easy3E stays closest to the source on every preservation metric. <span data-method></span> is second to it on PSNR, SSIM, LPIPS and DINO-I, and its geometric preservation (CD 0.0183, Pres. 0.0119) is close to that of VoxHammer and VecSet-Edit.</p>
+
+  <details class="metrics">
+    <summary>What each metric measures</summary>
+    <dl>
+      <dt>CD&nbsp;&darr;</dt>
+      <dd>Chamfer distance to the source mesh, outside the 3D edit region. It is computed from randomly sampled points, so two samplings of the same mesh already differ by about 0.005; smaller errors cannot be resolved.</dd>
+      <dt>PSNR&nbsp;&uarr;, SSIM&nbsp;&uarr;, LPIPS&nbsp;&darr;</dt>
+      <dd>Agreement between renders of the result and of the source over 16 views, outside the 2D projection of the edit region.</dd>
+      <dt>DINO-I&nbsp;&uarr;</dt>
+      <dd>Similarity of DINOv2 features between whole renders of the result and of the source, edit region included.</dd>
+      <dt>CLIP-T&nbsp;&uarr;</dt>
+      <dd>Similarity between renders of the result and a text caption of the edited object.</dd>
+      <dt>Edit fidelity: DINOv2&nbsp;&darr;, CLIP&nbsp;&darr;</dt>
+      <dd>Ours. We render the result from the camera of the edit request, crop the render and the edit request to the square around the 2D edit mask, and set everything outside the mask to the same gray. The score is one minus the cosine similarity of the two images' DINOv2 (or CLIP) class-token embeddings.</dd>
+      <dt>Preservation (Pres.)&nbsp;&darr;</dt>
+      <dd>Ours. The exact point-to-surface distance between result and source, outside the 3D edit region: 200,000 points sampled on each surface, points inside the region discarded, averaged over both directions. Its noise floor is below 10<sup>&minus;8</sup>.</dd>
+    </dl>
+    <p>The first six are the benchmark's own metrics, computed with its released evaluation code, unmodified, for every method.</p>
+  </details>
+</section>
+
+<section class="wrap" id="user-study">
+  <h2>User study</h2>
+  <p>In a blind pairwise study on 28 cases, 16 local and 12 global edits, each case paired our result with that of one baseline. Participants saw the source asset, its rendered view and the edit request, with the two results on random sides. They chose the result that better applies the requested edit while otherwise staying faithful to the source, or declared a tie.</p>
+  <p>Eighteen participants cast 398 votes. Our result was preferred in <strong>88.0%</strong> of the votes that were not ties (95% bootstrap interval over participants and cases: 77.6% to 95.2%).</p>
+  <figure class="figure">
+    <a class="zoom" href="assets/img/user_study_bars.webp"><img src="assets/img/user_study_bars.webp" alt="Horizontal stacked bars: share of votes preferring our result, a tie, or the baseline, for each of the five baselines" width="1600" height="713" loading="lazy"></a>
+    <figcaption>Share of votes preferring our result, declaring a tie, or preferring the baseline, per baseline.</figcaption>
+  </figure>
+</section>
+
+<section class="band" id="global">
+  <div class="wrap">
+    <h2>Global edits</h2>
+    <p>An edit that changes the whole asset can run in two ways. The first treats the whole asset as the edit region and runs the local-edit schedule: all tokens share one adapter strength in the first steps, then the probes decide which tokens follow the edited image. The second gives every token the same strength for all of sampling. Strength 1 stays close to the source, strength 0 follows the edited image with the base model alone, and values in between keep the asset's identity while the edited image changes its style or pose.</p>
+  </div>
+  <figure class="figure wrap-wide">
+    <a class="zoom" href="assets/img/comparison_global.webp"><img src="assets/img/comparison_global.webp" alt="Static comparison of global edits: source, edit request, VecSet-Edit, Easy3E, AnchorFlow, TanGO and ours" width="2400" height="1232" loading="lazy"></a>
+    <figcaption>Two global edits, each from the camera of the edit request (upper row) and from the opposite side (lower row). TanGO and AnchorFlow are textured with our pipeline.</figcaption>
+  </figure>
+  <div class="wrap">
+    <p>A single strength works as a control. Over 12 global edits, the distance to the source falls steadily as the strength rises, from 0.051 at <var>s</var>&nbsp;=&nbsp;0 to 0.004 at <var>s</var>&nbsp;=&nbsp;1. Edit fidelity (DINOv2 distance to the edit request; lower is better) is best at <var>s</var>&nbsp;=&nbsp;0.5: 0.169, against 0.224 for the base model and 0.229 at <var>s</var>&nbsp;=&nbsp;1. In the user study, participants preferred our global edits in 71.9% of the votes that were not ties.</p>
+  </div>
+</section>
+
+<section class="wrap" id="analysis">
+  <h2>Analysis</h2>
+
+  <h3 class="sub-h">Why the strength must vary per token</h3>
+  <p>Of the components we ablated, personalization changes the averaged metrics most. Without the adapter, the base model regenerates the whole asset from the edit request: on 150 benchmark cases, the preservation error rises from 0.012 to 0.042 and edit fidelity worsens from 0.250 to 0.290. A uniform strength does not solve this. Lowering it frees the edit but releases the rest of the object with it; raising it restores the object but suppresses the edit. Every uniform strength edits worse than <span data-method></span> by at least 2.5 paired standard errors.</p>
+  <figure class="figure">
+    <a class="zoom" href="assets/img/strength_local.webp"><img src="assets/img/strength_local.webp" alt="Three scatter plots of preservation error against edit fidelity for uniform adapter strengths 0, 0.5, 0.75 and 1, with our per-token result marked as a star" width="2200" height="760" loading="lazy"></a>
+    <figcaption>Three local edits. Each blue point holds the adapter at one strength <var>s</var> for every token at every step; the star sets the strength per token. Both axes are errors, so lower is better; preservation is in model units on a logarithmic scale. On the airplane and the watch strap, <span data-method></span> edits more faithfully than any uniform strength; on the figurine, only the base model (<var>s</var>&nbsp;=&nbsp;0) edits better, at 25 times our preservation error.</figcaption>
+  </figure>
+
+  <h3 class="sub-h">Tokens move during sampling</h3>
+  <p>A token of a VecSet latent is not tied to one place on the shape. We generated 10 benchmark assets with their adapters at full strength, so that the output is the source itself, and tracked where each token's decoder attention lands. Over steps 11 to 20, a median of 24.4% of the tokens (18.2% to 29.0% across assets) have their attention centroid in a different one of eight surface regions than at the final step, against 1.8% between two independent draws of the surface points. This is why <span data-method></span> selects the edit's tokens again at every step instead of once.</p>
+  <figure class="figure figure-wide">
+    <a class="zoom" href="assets/img/token_drift.webp"><img src="assets/img/token_drift.webp" alt="One tracked token across steps 11, 13, 17, 21 and 30: its decoder attention on the surface and its image attention both move from the feet to the hood" width="2200" height="880" loading="lazy"></a>
+    <figcaption>One tracked token. <strong>Top:</strong> the shape decoder's attention to it, computed on the clean shape predicted at each step and drawn on the final surface. <strong>Bottom:</strong> its attention to the patches of the conditioning image. Between steps 13 and 17, both move from the feet to the hood, across 73% of the object's bounding-box diagonal.</figcaption>
+  </figure>
+</section>
+
+<section class="wrap" id="limitations">
+  <h2>Limitations</h2>
+  <p><span data-method></span> needs one adapter per source asset, trained before any edit for up to 5,000 steps on 250 renders. It generates geometry only, so the colors of an edited asset depend on a separate texturing step. Its preservation is competitive rather than best: Easy3E stays closer to the source on every preservation metric. The effect of selecting the edit's tokens again at every step, and of combining the two probes, is concentrated on a minority of cases, so the averaged metrics change little without them. Finally, the benchmark has no ground-truth edited asset, and no metric we report, our edit fidelity included, sees the far side of an edit.</p>
+</section>
+
+<section class="wrap" id="bibtex">
+  <h2>BibTeX</h2>
+  <div class="bibtex">
+    <button type="button" class="copy" id="copy-bibtex">Copy</button>
+    <pre><code id="bibtex-code"></code></pre>
+  </div>
+  <p class="copy-state" id="copy-state" aria-live="polite"></p>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p><span data-method></span> project page. No analytics, cookies or external resources are loaded.</p>
+    <p>The interactive viewer uses three.js, meshoptimizer and fflate under the MIT license (<a href="results_viewer/assets/THIRD_PARTY_LICENSES.txt">license texts</a>).</p>
+  </div>
+</footer>
+
+<script src="assets/js/page.js"></script>
+</body>
+</html>
