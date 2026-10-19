@@ -98,7 +98,7 @@
     </li>
     <li>
       <h3>Set the adapter's strength per token</h3>
-      <p>The generator represents a shape as 4,096 latent tokens. The adapter sits in the transformer's feed-forward layers, which process each token separately, so each token can have its own adapter strength. Tokens in the edit run at strength zero and follow the edited image; all other tokens keep the adapter and reproduce the source. Attention still connects all tokens, so the edit and the rest of the asset are generated together, as one shape.</p>
+      <p>The generator represents a shape as 4,096 latent tokens. The adapter sits in the transformer's feed-forward layers, which process each token separately, so each token can have its own adapter strength. Tokens in the edit run at strength zero and follow the edited image; all other tokens keep the adapter and reproduce the source. Attention still connects all tokens, so the edit and the rest of the asset are generated together, as one coherent shape.</p>
     </li>
     <li>
       <h3>Find the edit's tokens again at every step</h3>
