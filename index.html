@@ -102,7 +102,7 @@
     </li>
     <li>
       <h3>Find the edit's tokens again at every step</h3>
-      <p>A token has no fixed place on the shape and can move during sampling, so a selection made once goes stale. Through the middle of sampling, we select the tokens again at every step. A <strong>2D probe</strong> picks the tokens that attend most to the edited part of the image. A <strong>3D probe</strong> samples points inside the 3D edit region, including empty space and parts the image does not show, and picks the tokens those points attend to most in the shape decoder. Their union runs without the adapter at the next step. Before that, all tokens share one adapter strength; in the last steps, the base model finishes the shape alone.</p>
+      <p>A token has no fixed place on the shape and can move during sampling, so a selection made once goes stale. We select the edit's tokens again at each step while the shape takes form. A <strong>2D probe</strong> picks the tokens that attend most to the edited part of the image. A <strong>3D probe</strong> picks the tokens that points inside the 3D edit region attend to most in the shape decoder, so it also reaches empty space and parts the image does not show. Their union runs without the adapter at the next step.</p>
     </li>
   </ol>
 </section>
