@@ -102,7 +102,7 @@
     </li>
     <li>
       <h3>Find the edit's tokens again at every step</h3>
-      <p>A token has no fixed place on the shape and can move during sampling, so a selection made once goes stale. Between step 8 and step 16 of 30, we select the tokens again at every step. A <strong>2D probe</strong> picks the tokens that attend most to the edited part of the image. A <strong>3D probe</strong> samples points inside the 3D edit region, including empty space and parts the image does not show, and picks the tokens those points attend to most in the shape decoder. Their union runs without the adapter at the next step. Before step 8, all tokens share one adapter strength; from step 16 on, the base model finishes the shape alone.</p>
+      <p>A token has no fixed place on the shape and can move during sampling, so a selection made once goes stale. Through the middle of sampling, we select the tokens again at every step. A <strong>2D probe</strong> picks the tokens that attend most to the edited part of the image. A <strong>3D probe</strong> samples points inside the 3D edit region, including empty space and parts the image does not show, and picks the tokens those points attend to most in the shape decoder. Their union runs without the adapter at the next step. Before that, all tokens share one adapter strength; in the last steps, the base model finishes the shape alone.</p>
     </li>
   </ol>
 </section>
@@ -193,43 +193,6 @@
     <a class="zoom" href="assets/img/user_study_bars.webp"><img src="assets/img/user_study_bars.webp" alt="Horizontal stacked bars: share of votes preferring our result, a tie, or the baseline, for each of the five baselines" width="1600" height="713" loading="lazy"></a>
     <figcaption>Share of votes preferring our result, declaring a tie, or preferring the baseline, per baseline.</figcaption>
   </figure>
-</section>
-
-<section class="band" id="global">
-  <div class="wrap">
-    <h2>Global edits</h2>
-    <p>An edit that changes the whole asset can run in two ways. The first treats the whole asset as the edit region and runs the local-edit schedule: all tokens share one adapter strength in the first steps, then the probes decide which tokens follow the edited image. The second gives every token the same strength for all of sampling. Strength 1 stays close to the source, strength 0 follows the edited image with the base model alone, and values in between keep the asset's identity while the edited image changes its style or pose.</p>
-  </div>
-  <figure class="figure wrap-wide">
-    <a class="zoom" href="assets/img/comparison_global.webp"><img src="assets/img/comparison_global.webp" alt="Static comparison of global edits: source, edit request, VecSet-Edit, Easy3E, AnchorFlow, TanGO and ours" width="2400" height="1232" loading="lazy"></a>
-    <figcaption>Two global edits, each from the camera of the edit request (upper row) and from the opposite side (lower row). TanGO and AnchorFlow are textured with our pipeline.</figcaption>
-  </figure>
-  <div class="wrap">
-    <p>A single strength works as a control. Over 12 global edits, the distance to the source falls steadily as the strength rises, from 0.051 at <var>s</var>&nbsp;=&nbsp;0 to 0.004 at <var>s</var>&nbsp;=&nbsp;1. Edit fidelity (DINOv2 distance to the edit request; lower is better) is best at <var>s</var>&nbsp;=&nbsp;0.5: 0.169, against 0.224 for the base model and 0.229 at <var>s</var>&nbsp;=&nbsp;1. In the user study, participants preferred our global edits in 71.9% of the votes that were not ties.</p>
-  </div>
-</section>
-
-<section class="wrap" id="analysis">
-  <h2>Analysis</h2>
-
-  <h3 class="sub-h">Why the strength must vary per token</h3>
-  <p>Of the components we ablated, personalization changes the averaged metrics most. Without the adapter, the base model regenerates the whole asset from the edit request: on 150 benchmark cases, the preservation error rises from 0.012 to 0.042 and edit fidelity worsens from 0.250 to 0.290. A uniform strength does not solve this. Lowering it frees the edit but releases the rest of the object with it; raising it restores the object but suppresses the edit. Every uniform strength edits worse than <span data-method></span> by at least 2.5 paired standard errors.</p>
-  <figure class="figure">
-    <a class="zoom" href="assets/img/strength_local.webp"><img src="assets/img/strength_local.webp" alt="Three scatter plots of preservation error against edit fidelity for uniform adapter strengths 0, 0.5, 0.75 and 1, with our per-token result marked as a star" width="2200" height="760" loading="lazy"></a>
-    <figcaption>Three local edits. Each blue point holds the adapter at one strength <var>s</var> for every token at every step; the star sets the strength per token. Both axes are errors, so lower is better; preservation is in model units on a logarithmic scale. On the airplane and the watch strap, <span data-method></span> edits more faithfully than any uniform strength; on the figurine, only the base model (<var>s</var>&nbsp;=&nbsp;0) edits better, at 25 times our preservation error.</figcaption>
-  </figure>
-
-  <h3 class="sub-h">Tokens move during sampling</h3>
-  <p>A token of a VecSet latent is not tied to one place on the shape. We generated 10 benchmark assets with their adapters at full strength, so that the output is the source itself, and tracked where each token's decoder attention lands. Over steps 11 to 20, a median of 24.4% of the tokens (18.2% to 29.0% across assets) have their attention centroid in a different one of eight surface regions than at the final step, against 1.8% between two independent draws of the surface points. This is why <span data-method></span> selects the edit's tokens again at every step instead of once.</p>
-  <figure class="figure figure-wide">
-    <a class="zoom" href="assets/img/token_drift.webp"><img src="assets/img/token_drift.webp" alt="One tracked token across steps 11, 13, 17, 21 and 30: its decoder attention on the surface and its image attention both move from the feet to the hood" width="2200" height="880" loading="lazy"></a>
-    <figcaption>One tracked token. <strong>Top:</strong> the shape decoder's attention to it, computed on the clean shape predicted at each step and drawn on the final surface. <strong>Bottom:</strong> its attention to the patches of the conditioning image. Between steps 13 and 17, both move from the feet to the hood, across 73% of the object's bounding-box diagonal.</figcaption>
-  </figure>
-</section>
-
-<section class="wrap" id="limitations">
-  <h2>Limitations</h2>
-  <p><span data-method></span> needs one adapter per source asset, trained before any edit for up to 5,000 steps on 250 renders. It generates geometry only, so the colors of an edited asset depend on a separate texturing step. Its preservation is competitive rather than best: Easy3E stays closer to the source on every preservation metric. The effect of selecting the edit's tokens again at every step, and of combining the two probes, is concentrated on a minority of cases, so the averaged metrics change little without them. Finally, the benchmark has no ground-truth edited asset, and no metric we report, our edit fidelity included, sees the far side of an edit.</p>
 </section>
 
 <section class="wrap" id="bibtex">
