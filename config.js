@@ -10,9 +10,9 @@ window.PAGE_CONFIG = {
   // An empty string renders the button as "coming soon" without a link.
   links: {
     paper: "",     // arXiv abstract page
-    code: "",      // GitHub repository
+    code: "https://github.com/itan-levin/sap3d",      // GitHub repository
     demo: "",      // Hugging Face Space
-    adapters: ""   // Hugging Face model repository with the per-asset adapters
+    adapters: "https://huggingface.co/Itan-levin/sap3d-adapters"   // Hugging Face model repository with the per-asset adapters
   },
 
   // Path or absolute URL of the interactive comparison viewer.
